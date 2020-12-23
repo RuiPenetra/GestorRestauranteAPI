@@ -17,6 +17,7 @@ use yii\web\Response;
  * PerfilController implements the CRUD actions for Perfil model.
  */
 class PerfilController extends ActiveController
+
 {
     public $modelClass='app\models\Perfil';
 
@@ -47,11 +48,77 @@ class PerfilController extends ActiveController
     {
         $iduser = Yii::$app->user->identity->id;
         $modelClass = $this->modelClass;
-        $model = $modelClass::find()->where(['id_user' => $iduser])->one();
+/*        $perfil=Perfil::find()
+            ->where(['perfil.id_user'=>$iduser])
+            ->joinWith('user')
+            ->asArray()
+            ->all();*/
 
-        if ($model === null)
+        $perfil=Perfil::find()
+            ->select('perfil.*,user.*')
+            ->leftJoin('user','user.id = perfil.id_user')
+            ->where(['perfil.id_user'=>$iduser])
+            ->with('user')
+            ->asArray()
+            ->all();
+
+//        SELECT p.*, u.username, u.email FROM perfil p JOIN user u on p.id_user=u.id
+        $user= Perfil::find()->where(['id_user'=>$iduser])->with('user')->where(['id_user'=>$iduser]);
+
+        $user=User::findOne($iduser);
+        if ($perfil === null)
             throw new \yii\web\NotFoundHttpException("null");
 
-        return $model;
+        return $perfil;
+    }
+
+    public function actionUpdate($id)
+    {
+        $modelClass = $this->modelClass;
+
+        $perfil = Perfil::findOne($id);
+        $request = Yii::$app->request;
+        $perfil->nome = $request->post('nome');
+        $perfil->apelido = $request->post('apelido');
+        $perfil->morada = $request->post('morada');
+        $perfil->datanascimento = $request->post('datanascimento');
+        $perfil->codigopostal = $request->post('codigopostal');
+        $perfil->telemovel = $request->post('telemovel');
+        $perfil->genero = $request->post('genero');
+        $perfil->nacionalidade = $request->post('nacionalidade');
+        $perfil->save();
+
+        $user = User::findOne($id);
+        $user->email = $request->post('email');
+        $user->username = $request->post('username');
+
+        if ($request->post('nova_password') != null) {
+            $user->setPassword($request->post('nova_password'));
+        }
+
+        $allUser = Perfil::find()
+            ->select('perfil.*,user.*')
+            ->leftJoin('user', 'user.id = perfil.id_user')
+            ->where(['perfil.id_user' => $user->id])
+            ->with('user')
+            ->asArray()
+            ->all();
+
+        return $allUser;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

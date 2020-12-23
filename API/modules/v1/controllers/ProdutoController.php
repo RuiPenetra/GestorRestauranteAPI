@@ -19,9 +19,7 @@ class ProdutoController extends ActiveController
                 'application/json' => Response::FORMAT_JSON,
             ]
         ];
-        $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
-        ];
+
         return $behaviors;
     }
     public function actions()

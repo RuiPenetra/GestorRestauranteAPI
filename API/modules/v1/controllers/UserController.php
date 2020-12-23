@@ -2,6 +2,7 @@
 
 namespace app\modules\v1\controllers;
 
+use app\models\Perfil;
 use app\models\User;
 use Yii;
 use yii\filters\auth\CompositeAuth;
@@ -61,10 +62,11 @@ class UserController extends ActiveController
         $iduser = Yii::$app->user->identity->id;
         $modelClass = $this->modelClass;
         $model = $modelClass::find()->where(['id' => $iduser])->one();
-
         if ($model === null)
             throw new \yii\web\NotFoundHttpException("null");
 
         return $model;
     }
+
+
 }

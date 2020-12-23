@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=epiz_27283975_gestorrestaurante',
+    'dsn' => 'mysql:host=localhost;dbname=bdgestorrestaurante',
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8',

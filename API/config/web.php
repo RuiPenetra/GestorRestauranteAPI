@@ -61,9 +61,11 @@ $config = [
                     'controller' => ['v1/user','v1/produto'],
                     'pluralize' => false,
                     'extraPatterns' => [
-                        'GET {id}/perfil' => 'perfil', // 'morada' é 'actionMorada'
+                        'GET {id}/perfil' => 'user', // 'morada' é 'actionMorada'
+                        'POST update/{id}' => 'perfil' // 'morada' é 'actionMorada'
                     ],
                 ],
+
             ],
         ],
     ],
