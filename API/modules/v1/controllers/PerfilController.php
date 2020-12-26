@@ -58,7 +58,6 @@ class PerfilController extends ActiveController
             ->select('perfil.*,user.*')
             ->leftJoin('user','user.id = perfil.id_user')
             ->where(['perfil.id_user'=>$iduser])
-            ->with('user')
             ->asArray()
             ->all();
 
@@ -76,6 +75,7 @@ class PerfilController extends ActiveController
     {
         $modelClass = $this->modelClass;
 
+        \Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
         $perfil = Perfil::findOne($id);
         $request = Yii::$app->request;
         $perfil->nome = $request->post('nome');
@@ -88,19 +88,19 @@ class PerfilController extends ActiveController
         $perfil->nacionalidade = $request->post('nacionalidade');
         $perfil->save();
 
-        $user = User::findOne($id);
+        $user = User::findOne($perfil->id_user);
         $user->email = $request->post('email');
         $user->username = $request->post('username');
 
         if ($request->post('nova_password') != null) {
             $user->setPassword($request->post('nova_password'));
         }
+        $user->save();
 
         $allUser = Perfil::find()
             ->select('perfil.*,user.*')
             ->leftJoin('user', 'user.id = perfil.id_user')
             ->where(['perfil.id_user' => $user->id])
-            ->with('user')
             ->asArray()
             ->all();
 
