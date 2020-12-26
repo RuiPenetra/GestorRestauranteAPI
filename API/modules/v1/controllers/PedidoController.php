@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules;
+namespace app\modules\v1\controllers;
 
 use app\models\Perfil;
 use app\models\User;
@@ -47,28 +47,14 @@ class PedidoController extends ActiveController
     public function actionIndex()
     {
         $iduser = Yii::$app->user->identity->id;
-        $modelClass = $this->modelClass;
-        /*        $perfil=Perfil::find()
-                    ->where(['perfil.id_user'=>$iduser])
-                    ->joinWith('user')
-                    ->asArray()
-                    ->all();*/
 
-        $perfil=Perfil::find()
-            ->select('perfil.*,user.*')
-            ->leftJoin('user','user.id = perfil.id_user')
-            ->where(['perfil.id_user'=>$iduser])
-            ->asArray()
-            ->all();
+        $pedidos=Pedido::findAll(['id_perfil'=>$iduser]);
 
-//        SELECT p.*, u.username, u.email FROM perfil p JOIN user u on p.id_user=u.id
-        $user= Perfil::find()->where(['id_user'=>$iduser])->with('user')->where(['id_user'=>$iduser]);
+        if ($pedidos != null)
+            return $pedidos;
+        else
+            throw new NotFoundHttpException('Não existe pedidos');
 
-        $user=User::findOne($iduser);
-        if ($perfil === null)
-            throw new \yii\web\NotFoundHttpException("null");
-
-        return $perfil;
     }
 
 
@@ -91,21 +77,25 @@ class PedidoController extends ActiveController
 
     public function actionCreateRestaurante()
     {
-        \Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format=Response::FORMAT_JSON;
         $pedido = new Pedido();
         $request = Yii::$app->request;
-        $pedido->scenario='scenariorestaurante';
-        $pedido = new Pedido();
-        $pedido->estado = $request->post('nome');
+        $pedido->scenario="scenariorestaurante";
+        $pedido->estado=0;
+        $pedido->tipo=0;
+        $pedido->id_mesa=$request->post('id_mesa');
+        $pedido->data=$request->post('data');
+        $pedido->id_perfil=Yii::$app->user->identity->id;
 
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($pedido->save()) {
+
+            return $pedido;
+
+        }else{
+            throw new NotFoundHttpException('Erro criar pedido');
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
     }
 
     /**

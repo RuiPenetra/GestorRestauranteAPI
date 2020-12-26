@@ -4,25 +4,31 @@ namespace app\models;
 
 use Yii;
 
+/**
+ * This is the model class for table "pedido".
+ *
+ * @property int $id
+ * @property string $data
+ * @property int $tipo
+ * @property string|null $nome_pedido
+ * @property string|null $nota
+ * @property int $estado
+ * @property int|null $id_mesa
+ * @property int $id_perfil
+ *
+ * @property Fatura[] $faturas
+ * @property Perfil $perfil
+ * @property Mesa $mesa
+ * @property PedidoProduto[] $pedidoProdutos
+ */
 class Pedido extends \yii\db\ActiveRecord
 {
     const SCENARIO_RESTAURANTE='scenariorestaurante';
     const SCENARIO_TAKEAWAY='scenariotakeaway';
 
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'pedido';
-    }
-
-    public function getCustomScenarios()
-    {
-        return[
-            self::SCENARIO_RESTAURANTE => [['estado','tipo','id_mesa','id_perfil','data'],'required'],
-            self::SCENARIO_TAKEAWAY => [['estado','tipo','nome_pedido','id_perfil','data'],'required']
-        ];
     }
 
     public function scenarios()
@@ -32,9 +38,7 @@ class Pedido extends \yii\db\ActiveRecord
         $scenarios[self::SCENARIO_TAKEAWAY] = ['estado','tipo','nome_pedido','id_perfil','data'];
         return $scenarios;
     }
-    /**
-     * {@inheritdo
-     */
+
     public function rules()
     {
         return [
