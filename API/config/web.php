@@ -58,9 +58,10 @@ $config = [
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['v1/perfil','v1/pedido'],
+                    'controller' => ['v1/perfil','v1/user','v1/pedido','v1/auth'],
                     'pluralize' => false,
                     'extraPatterns' => [
+                        'POST /login' => 'login',
                         'GET {id}/perfil' => 'user', // 'morada' é 'actionMorada'
                         'PUT {id}/update' => 'update', // 'update' é 'actionupdate'
                         'GET pedido' => 'index', // 'update' é 'actionupdate'

@@ -35,20 +35,34 @@ class UserController extends ActiveController
             'authMethods' => [
                 [
                     'class' => HttpBasicAuth::className(),
-                    'auth' => function ($username, $password){
+                    'auth' => function () {
+                        $request = Yii::$app->request;
+                        $username=$request->post('username');
+                        $password=$request->post('password');
                         $user = User::findByUsername($username);
                         if ($user && $user->validatePassword($password)){
                             return $user;
                         }
                         return null;
                     }
-                ],
+                    ],
                 QueryParamAuth::className(),
             ]
         ];
         return $behaviors;
     }
 
+    public function actionTeste(){
+        $request = Yii::$app->request;
+        $username=$request->post('username');
+        $password=$request->post('password');
+
+        $user = User::findByUsername($username);
+        if ($user && $user->validatePassword($password)){
+            return $user;
+        }
+        return null;
+    }
     public function actions()
     {
         $actions = parent::actions();
