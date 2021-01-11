@@ -77,7 +77,7 @@ class PerfilController extends ActiveController
 
         \Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
         $perfil = Perfil::findOne($id);
-        $request = Yii::$app->request;
+
         $perfil->nome = $request->post('nome');
         $perfil->apelido = $request->post('apelido');
         $perfil->morada = $request->post('morada');

@@ -48,7 +48,7 @@ class PedidoController extends ActiveController
     {
         $iduser = Yii::$app->user->identity->id;
 
-        $pedidos=Pedido::findAll(['id_perfil'=>$iduser]);
+        $pedidos=Pedido::findOne(['id_perfil'=>$iduser]);
 
         if ($pedidos != null)
             return $pedidos;
@@ -75,16 +75,24 @@ class PedidoController extends ActiveController
         }
     }
 
-    public function actionCreateRestaurante()
+    public function actionCreate()
     {
+
         Yii::$app->response->format=Response::FORMAT_JSON;
         $pedido = new Pedido();
-        $request = Yii::$app->request;
-        $pedido->scenario="scenariorestaurante";
+
+        $pedido->load(Yii::$app->request->post());
+
+
+        if($pedido->tipo!=0){
+            $pedido->scenario="scenariotakeaway";
+
+        }else{
+            $pedido->scenario="scenariorestaurante";
+        }
         $pedido->estado=0;
-        $pedido->tipo=0;
-        $pedido->id_mesa=$request->post('id_mesa');
-        $pedido->data=$request->post('data');
+
+        $pedido->data=date('Y-m-d h:m:s');
         $pedido->id_perfil=Yii::$app->user->identity->id;
 
 
