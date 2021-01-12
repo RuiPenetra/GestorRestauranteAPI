@@ -62,16 +62,7 @@ class AuthController extends ActiveController
         if ($user && $user->validatePassword($password)){
             return ['token'=> $user->auth_key];
         }else{
-            if($user==null) {
-                return ['message'=>'Username incorreto'];
-                /* throw new \yii\web\NotFoundHttpException("Username incorreto");*/
-            }elseif ($user->validatePassword($password)==false){
-                return ['message'=>'Password incorreta'];
-                /*            throw new \yii\web\NotFoundHttpException("Password incorreta");*/
-            }else{
-                return ['message'=>'Utilizador não existe'];
-//            throw new \yii\web\NotFoundHttpException("Utilizador não existe");
-            }
+            return null;
         }
     }
 

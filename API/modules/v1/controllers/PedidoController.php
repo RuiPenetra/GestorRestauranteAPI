@@ -2,14 +2,17 @@
 
 namespace app\modules\v1\controllers;
 
+use app\models\Mesa;
 use app\models\Perfil;
 use app\models\User;
 use Yii;
 use app\models\Pedido;
 use app\models\PedidoSearch;
+use yii\base\ErrorException;
 use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Controller;
+use yii\web\ErrorHandler;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
@@ -48,7 +51,7 @@ class PedidoController extends ActiveController
     {
         $iduser = Yii::$app->user->identity->id;
 
-        $pedidos=Pedido::findOne(['id_perfil'=>$iduser]);
+        $pedidos=Pedido::findAll(['id_perfil'=>$iduser]);
 
         if ($pedidos != null)
             return $pedidos;
@@ -75,14 +78,13 @@ class PedidoController extends ActiveController
         }
     }
 
-    public function actionCreate()
+    public function actionCriar()
     {
 
         Yii::$app->response->format=Response::FORMAT_JSON;
         $pedido = new Pedido();
 
-        $pedido->load(Yii::$app->request->post());
-
+        $pedido->attributes=Yii::$app->request->post();
 
         if($pedido->tipo!=0){
             $pedido->scenario="scenariotakeaway";
@@ -90,16 +92,20 @@ class PedidoController extends ActiveController
         }else{
             $pedido->scenario="scenariorestaurante";
         }
-        $pedido->estado=0;
-        
+        $mesa=Mesa::findOne([$pedido->id_mesa]);
 
-        if ($pedido->save()) {
 
-            return $pedido;
+            if ($mesa->estado==2){
+                $pedido->save();
+                $mesa->estado=0;
+                $mesa->save();
 
-        }else{
-            throw new NotFoundHttpException('Erro criar pedido');
-        }
+                $pedido_guardado=Pedido::findOne($pedido->id);
+                return $pedido_guardado;
+
+            }else{
+                return Yii::$app->response->send('TESTSSSS');
+            }
 
     }
 

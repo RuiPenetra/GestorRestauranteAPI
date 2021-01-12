@@ -6,6 +6,8 @@ use app\models\User;
 use Yii;
 use app\models\Perfil;
 use app\models\PerfilSearch;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBasicAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Controller;
@@ -31,7 +33,20 @@ class PerfilController extends ActiveController
             ]
         ];
         $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
+            'class' => CompositeAuth::className(),
+            'authMethods' => [
+                [
+                    'class' => HttpBasicAuth::className(),
+                    'auth' => function ($username, $password) {
+                        $user = User::find()->where(['username' => $username])->one();
+                        if ($user->verifyPassword($password)) {
+                            return $user;
+                        }
+                        return null;
+                    },
+                ],
+                QueryParamAuth::className(),
+            ]
         ];
         return $behaviors;
     }
@@ -75,22 +90,18 @@ class PerfilController extends ActiveController
     {
         $modelClass = $this->modelClass;
 
-        \Yii::$app->response->format=\yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format=Response::FORMAT_JSON;
         $perfil = Perfil::findOne($id);
 
-        $perfil->nome = $request->post('nome');
-        $perfil->apelido = $request->post('apelido');
-        $perfil->morada = $request->post('morada');
-        $perfil->datanascimento = $request->post('datanascimento');
-        $perfil->codigopostal = $request->post('codigopostal');
-        $perfil->telemovel = $request->post('telemovel');
-        $perfil->genero = $request->post('genero');
-        $perfil->nacionalidade = $request->post('nacionalidade');
+
+        $perfil->load(Yii::$app->request->post());
+
         $perfil->save();
 
         $user = User::findOne($perfil->id_user);
-        $user->email = $request->post('email');
-        $user->username = $request->post('username');
+        $user->load(Yii::$app->request->post());
+
+        $user->save();
 
         if ($request->post('nova_password') != null) {
             $user->setPassword($request->post('nova_password'));
