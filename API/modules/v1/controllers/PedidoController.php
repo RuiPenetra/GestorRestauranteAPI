@@ -91,10 +91,7 @@ class PedidoController extends ActiveController
             $pedido->scenario="scenariorestaurante";
         }
         $pedido->estado=0;
-
-        $pedido->data=date('Y-m-d h:m:s');
-        $pedido->id_perfil=Yii::$app->user->identity->id;
-
+        
 
         if ($pedido->save()) {
 
