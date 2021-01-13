@@ -65,10 +65,18 @@ $config = [
                         'GET {id}/perfil' => 'user', // 'morada' é 'actionMorada'
                         'PUT {id}/update' => 'update', // 'update' é 'actionupdate'
                         'GET pedido' => 'index', // 'update' é 'actionupdate'
-                        'POST pedido' => 'criar', // 'update' é 'actionupdate'
+                        'POST pedido' => 'criar', // 'update' é 'actionCriar'
                     ],
                 ],
-
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'v1/pedidoproduto',
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'GET all/{id}' => 'all', // 'update' é 'actionupdate'
+                        'POST criar' => 'criar', // 'update' é 'actionupdate'
+                    ],
+                ],
 
             ],
         ],

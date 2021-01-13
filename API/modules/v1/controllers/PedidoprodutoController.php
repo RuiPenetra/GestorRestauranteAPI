@@ -1,33 +1,47 @@
 <?php
 
-namespace app\models;
+namespace app\modules\v1\controllers;
 
 use Yii;
 use app\models\PedidoProduto;
 use app\models\PedidoprodutoSearch;
+use yii\filters\auth\QueryParamAuth;
+use yii\rest\ActiveController;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * PedidoprodutoController implements the CRUD actions for PedidoProduto model.
  */
-class PedidoprodutoController extends Controller
+class PedidoprodutoController extends ActiveController
 {
-    /**
-     * {@inheritdoc}
-     */
+    public $modelClass='app\models\PedidoProduto';
+
     public function behaviors()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
+        $behaviors = parent::behaviors();
+        $behaviors['contentNegotiator'] = [
+            'class' => 'yii\filters\ContentNegotiator',
+            'formats' => [
+                'application/json' => Response::FORMAT_JSON,
+            ]
         ];
+        $behaviors['authenticator'] = [
+            'class' => QueryParamAuth::className(),
+        ];
+        return $behaviors;
     }
+
+    public function actions()
+    {
+        $actions = parent::actions();
+
+        unset($actions['index']);
+        return $actions;
+    }
+
 
     /**
      * Lists all PedidoProduto models.
@@ -35,13 +49,12 @@ class PedidoprodutoController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PedidoprodutoSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $pedidos=PedidoProduto::find()->all();
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        if ($pedidos != null)
+            return $pedidos;
+        else
+            throw new NotFoundHttpException('Não existe pedidos');
     }
 
     /**
@@ -50,11 +63,12 @@ class PedidoprodutoController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionAll($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+
+        $pedidosProduto=PedidoProduto::findAll(['id_pedido'=>$id]);
+
+        return $pedidosProduto;
     }
 
     /**
@@ -62,17 +76,22 @@ class PedidoprodutoController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCriar()
     {
-        $model = new PedidoProduto();
+        Yii::$app->response->format=Response::FORMAT_JSON;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $pedidoProduto = new PedidoProduto();
+
+        $pedidoProduto->attributes=Yii::$app->request->post();
+
+        $pedidoProduto->quant_Entregue=0;
+        $pedidoProduto->quant_Preparacao=0;
+        if($pedidoProduto->save()){
+
+            return $pedidoProduto;
+        }else{
+            return Yii::$app->response->send('ERROOOO');
         }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
     }
 
     /**
