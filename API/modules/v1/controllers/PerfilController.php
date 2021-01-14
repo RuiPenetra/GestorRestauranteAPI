@@ -86,6 +86,24 @@ class PerfilController extends ActiveController
         return $perfil;
     }
 
+    public function actionCriar()
+    {
+        Yii::$app->response->format=Response::FORMAT_JSON;
+        
+        $user = new User();
+        $user->attributes=Yii::$app->request->post();
+        $user->save();
+       
+        $request = Yii::$app->request;
+        // $perfil= new Perfil();
+        // $perfil->attributes=Yii::$app->request->post();
+        
+        // $perfil->save();
+        
+        return $user;
+    }
+
+
     public function actionUpdate($id)
     {
         $modelClass = $this->modelClass;

@@ -55,15 +55,21 @@ $config = [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
+            'rules' => [ 
+                [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'v1/auth',
+                'pluralize' => false,
+                'extraPatterns' => [
+                    'POST login' => 'login', 
+                    'POST registar' => 'registar', 
+                ],
+            ],
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['v1/perfil','v1/user','v1/pedido','v1/auth'],
+                    'controller' => ['v1/user','v1/pedido'],
                     'pluralize' => false,
                     'extraPatterns' => [
-                        'POST login' => 'login',
-                        'GET {id}/perfil' => 'user', // 'morada' é 'actionMorada'
-                        'PUT {id}/update' => 'update', // 'update' é 'actionupdate'
                         'GET pedido' => 'index', // 'update' é 'actionupdate'
                         'POST pedido' => 'criar', // 'update' é 'actionCriar'
                     ],
@@ -75,6 +81,16 @@ $config = [
                     'extraPatterns' => [
                         'GET all/{id}' => 'all', // 'update' é 'actionupdate'
                         'POST criar' => 'criar', // 'update' é 'actionupdate'
+                    ],
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'v1/perfil',
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'GET {id}/perfil' => 'user', // 'morada' é 'actionMorada'
+                        'PUT {id}/update' => 'update', // 'update' é 'actionupdate'
+                        'POST criar'=>'criar',
                     ],
                 ],
 

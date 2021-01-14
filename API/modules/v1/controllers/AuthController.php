@@ -9,7 +9,7 @@ use yii\filters\auth\HttpBasicAuth;
 use yii\rest\ActiveController;
 use yii\web\Controller;
 use yii\web\Response;
-
+use app\models\Perfil;
 /**
  * Default controller for the `v1` module
  */
@@ -66,4 +66,32 @@ class AuthController extends ActiveController
         }
     }
 
+    public function actionRegistar()
+    {
+        Yii::$app->response->format=Response::FORMAT_JSON;
+        
+        $user = new User();
+        $user->attributes=Yii::$app->request->post();
+        $user->username=Yii::$app->request->post("username");
+        $user->email=Yii::$app->request->post("email");
+    
+        $user->setPassword(Yii::$app->request->post("password"));
+        $user->generateAuthKey();
+        $user->generateEmailVerificationToken();
+        $user->save();
+       
+    
+         $perfil= new Perfil();
+         $perfil->attributes=Yii::$app->request->post();
+         $perfil->id_user=$user->id;
+         $perfil->save();
+         
+         $allUser = Perfil::find()
+            ->select('perfil.*,user.*')
+            ->leftJoin('user', 'user.id = perfil.id_user')
+            ->where(['perfil.id_user' => $perfil->id_user])
+            ->asArray()
+            ->all();
+        return $allUser;
+    }
 }
