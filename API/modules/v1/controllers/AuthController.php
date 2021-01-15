@@ -68,33 +68,45 @@ class AuthController extends ActiveController
 
     public function actionRegistar()
     {
-        Yii::$app->response->format=Response::FORMAT_JSON;
-        
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $user = new User();
-        $user->attributes=Yii::$app->request->post();
-        $user->username=Yii::$app->request->post("username");
-        $user->email=Yii::$app->request->post("email");
-    
+        $user->attributes = Yii::$app->request->post();
+        $user->username = Yii::$app->request->post("username");
+        $user->email = Yii::$app->request->post("email");
+
         $user->setPassword(Yii::$app->request->post("password"));
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
-        $user->save();
-       
-    
-         $perfil= new Perfil();
-         $perfil->attributes=Yii::$app->request->post();
-         $perfil->id_user=$user->id;
-         $perfil->datanascimento="2514-02-02";
-         $perfil->cargo="cliente";
-         $perfil->genero=0;
-         $perfil->save();
-         
-         $allUser = Perfil::find()
-            ->select('perfil.*,user.*')
-            ->leftJoin('user', 'user.id = perfil.id_user')
-            ->where(['perfil.id_user' => $perfil->id_user])
-            ->asArray()
-            ->all();
-        return $allUser;
+        if ($user->save() == true) {
+
+            $perfil = new Perfil();
+            $perfil->attributes = Yii::$app->request->post();
+            $perfil->id_user = $user->id;
+            $perfil->cargo = "cliente";
+
+            if ($perfil->save() == true) {
+
+                return ['id_user' => $perfil->id_user,
+                    'nome' => $perfil->nome,
+                    'apelido' => $perfil->apelido,
+                    'morada' => $perfil->morada,
+                    'datanascimento' => $perfil->datanascimento,
+                    'nacionalidade' => $perfil->nacionalidade,
+                    'codigopostal' => $perfil->codigopostal,
+                    'telemovel' => $perfil->telemovel,
+                    'genero' => $perfil->genero,
+                    'cargo' => $perfil->cargo,
+                    'username' => $perfil->user->username,
+                    'email' => $perfil->user->email];
+            }else{
+                $user = User::findOne($user->id);
+                $user->delete();
+
+            }
+        }
+
+        return $user;
     }
+
 }
