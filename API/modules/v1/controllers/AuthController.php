@@ -84,6 +84,9 @@ class AuthController extends ActiveController
          $perfil= new Perfil();
          $perfil->attributes=Yii::$app->request->post();
          $perfil->id_user=$user->id;
+         $perfil->datanascimento="2514-02-02";
+         $perfil->cargo="cliente";
+         $perfil->genero=0;
          $perfil->save();
          
          $allUser = Perfil::find()
