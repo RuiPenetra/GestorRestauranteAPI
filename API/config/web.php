@@ -97,7 +97,7 @@ $config = [
                     'pluralize' => false,
                     'extraPatterns' => [
                         'GET {id}/perfil' => 'user', // 'morada' é 'actionMorada'
-                        'PUT {id}/update' => 'update', // 'update' é 'actionupdate'
+                        'PUT {id}/atualizar' => 'atualizar', // 'update' é 'actionupdate'
                         'POST criar'=>'criar',
                     ],
                 ],

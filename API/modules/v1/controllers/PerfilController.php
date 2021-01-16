@@ -62,28 +62,21 @@ class PerfilController extends ActiveController
     public function actionIndex()
     {
         $iduser = Yii::$app->user->identity->id;
-        $modelClass = $this->modelClass;
-/*        $perfil=Perfil::find()
-            ->where(['perfil.id_user'=>$iduser])
-            ->joinWith('user')
-            ->asArray()
-            ->all();*/
 
-        $perfil=Perfil::find()
-            ->select('perfil.*,user.*')
-            ->leftJoin('user','user.id = perfil.id_user')
-            ->where(['perfil.id_user'=>$iduser])
-            ->asArray()
-            ->all();
+        $perfil= Perfil::findOne($iduser);;
 
-//        SELECT p.*, u.username, u.email FROM perfil p JOIN user u on p.id_user=u.id
-        $user= Perfil::find()->where(['id_user'=>$iduser])->with('user')->where(['id_user'=>$iduser]);
-
-        $user=User::findOne($iduser);
-        if ($perfil === null)
-            throw new \yii\web\NotFoundHttpException("null");
-
-        return $perfil;
+        return ['id_user' => $perfil->id_user,
+            'nome' => $perfil->nome,
+            'apelido' => $perfil->apelido,
+            'morada' => $perfil->morada,
+            'datanascimento' => $perfil->datanascimento,
+            'nacionalidade' => $perfil->nacionalidade,
+            'codigopostal' => $perfil->codigopostal,
+            'telemovel' => $perfil->telemovel,
+            'genero' => $perfil->genero,
+            'cargo' => $perfil->cargo,
+            'username' => $perfil->user->username,
+            'email' => $perfil->user->email];
     }
 
     public function actionCriar()
@@ -104,36 +97,36 @@ class PerfilController extends ActiveController
     }
 
 
-    public function actionUpdate($id)
+    public function actionAtualizar($id)
     {
-        $modelClass = $this->modelClass;
-
         Yii::$app->response->format=Response::FORMAT_JSON;
-        $perfil = Perfil::findOne($id);
 
+        $user = User::findOne($id);
 
-        $perfil->load(Yii::$app->request->post());
+        $user->username=Yii::$app->request->post('username');
+        $user->email=Yii::$app->request->post('email');
+
+        $user->save();
+
+        $perfil = Perfil::findOne($user->id);
+
+        $perfil->attributes=Yii::$app->request->post();
 
         $perfil->save();
 
-        $user = User::findOne($perfil->id_user);
-        $user->load(Yii::$app->request->post());
 
-        $user->save();
-
-        if ($request->post('nova_password') != null) {
-            $user->setPassword($request->post('nova_password'));
-        }
-        $user->save();
-
-        $allUser = Perfil::find()
-            ->select('perfil.*,user.*')
-            ->leftJoin('user', 'user.id = perfil.id_user')
-            ->where(['perfil.id_user' => $user->id])
-            ->asArray()
-            ->all();
-
-        return $allUser;
+        return ['id_user' => $perfil->id_user,
+                    'nome' => $perfil->nome,
+                    'apelido' => $perfil->apelido,
+                    'morada' => $perfil->morada,
+                    'datanascimento' => $perfil->datanascimento,
+                    'nacionalidade' => $perfil->nacionalidade,
+                    'codigopostal' => $perfil->codigopostal,
+                    'telemovel' => $perfil->telemovel,
+                    'genero' => $perfil->genero,
+                    'cargo' => $perfil->cargo,
+                    'username' => $user->username,
+                    'email' => $user->email];
     }
 }
 
