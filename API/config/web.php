@@ -76,6 +76,14 @@ $config = [
                 ],
                 [
                     'class' => 'yii\rest\UrlRule',
+                    'controller' => ['v1/produto'],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'GET categoria/{id}' => 'categoria', // 'update' é 'actionupdate'
+                    ],
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
                     'controller' => 'v1/pedidoproduto',
                     'pluralize' => false,
                     'extraPatterns' => [
