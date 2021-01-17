@@ -135,6 +135,8 @@ class PedidoController extends ActiveController
         $mesa->save();
 
         $pedido->delete();
+
+        return true;
     }
 
     /**

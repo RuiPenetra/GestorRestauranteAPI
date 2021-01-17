@@ -119,6 +119,8 @@ class PedidoprodutoController extends ActiveController
     {
         $this->findModel($id)->delete();
 
+        return true;
+
     }
 
     protected function findModel($id)
