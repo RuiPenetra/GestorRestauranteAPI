@@ -69,6 +69,7 @@ $config = [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => ['v1/pedido'],
                     'pluralize' => false,
+                    'except' => ['delete'],
                     'extraPatterns' => [
                         'GET pedido' => 'index', // 'update' é 'actionupdate'
                         'POST pedido' => 'criar', // 'update' é 'actionCriar'
@@ -87,9 +88,12 @@ $config = [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => 'v1/pedidoproduto',
                     'pluralize' => false,
+                    'except' => ['delete'],
                     'extraPatterns' => [
                         'GET all/{id}' => 'all', // 'update' é 'actionupdate'
                         'POST criar' => 'criar', // 'update' é 'actionupdate'
+                        'PUT {id}/atualizar' => 'atualizar', // 'update' é 'actionupdate'
+                        'DELETE {id}/apagar' => 'apagar', // 'update' é 'actionCriar'
                     ],
                 ],
                 [

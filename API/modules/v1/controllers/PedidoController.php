@@ -110,13 +110,6 @@ class PedidoController extends ActiveController
 
     }
 
-    /**
-     * Updates an existing Pedido model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
@@ -130,22 +123,18 @@ class PedidoController extends ActiveController
         ]);
     }
 
-    /**
-     * Deletes an existing Pedido model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
+
     public function actionApagar($id)
     {
-        $pedidoProduto=PedidoProduto::findAll(['id_pedido'=>$id]);
+        PedidoProduto::deleteAll(['id_pedido'=>$id]);
 
-        $pedidoProduto->delete();
+        $pedido=$this->findModel($id);
 
-        $this->findModel($id)->delete();
+        $mesa=Mesa::findOne($pedido->id_mesa);
+        $mesa->estado=2;
+        $mesa->save();
 
-        return ['success'=>true];
+        $pedido->delete();
     }
 
     /**

@@ -86,6 +86,7 @@ class PedidoprodutoController extends ActiveController
 
         $pedidoProduto->quant_Entregue=0;
         $pedidoProduto->quant_Preparacao=0;
+
         if($pedidoProduto->save()){
 
             return $pedidoProduto;
@@ -101,40 +102,25 @@ class PedidoprodutoController extends ActiveController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionAtualizar($id)
     {
-        $model = $this->findModel($id);
+        Yii::$app->response->format=Response::FORMAT_JSON;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        $pedidoProduto = PedidoProduto::findOne($id);
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+        $pedidoProduto->attributes=Yii::$app->request->post();
+
+        $pedidoProduto->save();
+
+        return $pedidoProduto;
     }
 
-    /**
-     * Deletes an existing PedidoProduto model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
+    public function actionApagar($id)
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the PedidoProduto model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return PedidoProduto the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($id)
     {
         if (($model = PedidoProduto::findOne($id)) !== null) {
