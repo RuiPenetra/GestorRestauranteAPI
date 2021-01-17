@@ -3,6 +3,7 @@
 namespace app\modules\v1\controllers;
 
 use app\models\Mesa;
+use app\models\PedidoProduto;
 use app\models\Perfil;
 use app\models\User;
 use Yii;
@@ -136,11 +137,15 @@ class PedidoController extends ActiveController
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionApagar($id)
     {
+        $pedidoProduto=PedidoProduto::findAll(['id_pedido'=>$id]);
+
+        $pedidoProduto->delete();
+
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return ['success'=>true];
     }
 
     /**

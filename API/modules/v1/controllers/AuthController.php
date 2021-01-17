@@ -60,7 +60,18 @@ class AuthController extends ActiveController
 
         $user = User::findByUsername($username);
         if ($user && $user->validatePassword($password)){
-            return ['token'=> $user->auth_key,'success'=>true];
+
+            $perfil=Perfil::findOne($user->id);
+            return [
+                'success'=>true,
+                'id_user' => $perfil->id_user,
+                'nome' => $perfil->nome,
+                'apelido' => $perfil->apelido,
+                'genero' => $perfil->genero,
+                'cargo' => $perfil->cargo,
+                'token' => $perfil->user->auth_key
+            ];
+
         }else{
             return null;
         }

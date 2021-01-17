@@ -67,11 +67,12 @@ $config = [
             ],
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['v1/user','v1/pedido'],
+                    'controller' => ['v1/pedido'],
                     'pluralize' => false,
                     'extraPatterns' => [
                         'GET pedido' => 'index', // 'update' é 'actionupdate'
                         'POST pedido' => 'criar', // 'update' é 'actionCriar'
+                        'DELETE {id}/apagar' => 'apagar', // 'update' é 'actionCriar'
                     ],
                 ],
                 [
