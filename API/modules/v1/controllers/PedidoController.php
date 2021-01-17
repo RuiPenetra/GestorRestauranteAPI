@@ -11,6 +11,7 @@ use app\models\Pedido;
 use app\models\PedidoSearch;
 use yii\base\ErrorException;
 use yii\filters\auth\QueryParamAuth;
+use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\web\Controller;
 use yii\web\ErrorHandler;
@@ -50,14 +51,14 @@ class PedidoController extends ActiveController
 
     public function actionIndex()
     {
+        Yii::$app->response->format=Response::FORMAT_JSON;
+
         $iduser = Yii::$app->user->identity->id;
 
         $pedidos=Pedido::findAll(['id_perfil'=>$iduser]);
 
-        if ($pedidos != null)
-            return $pedidos;
-        else
-            throw new NotFoundHttpException('Não existe pedidos');
+      
+        return $pedidos;
 
     }
 
