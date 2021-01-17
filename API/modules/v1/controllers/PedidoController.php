@@ -93,21 +93,17 @@ class PedidoController extends ActiveController
         }else{
             $pedido->scenario="scenariorestaurante";
         }
-        $mesa=Mesa::findOne([$pedido->id_mesa]);
 
+        if($pedido->tipo==0){
+            $mesa=Mesa::findOne($pedido->id_mesa);
+            $mesa->estado=2;
+            $mesa->save();
+        }
+        
+        $pedido->save();
+        $pedido_guardado=Pedido::findOne($pedido->id);
 
-            if ($mesa->estado==2){
-                $pedido->save();
-                $mesa->estado=0;
-                $mesa->save();
-
-                $pedido_guardado=Pedido::findOne($pedido->id);
-                return $pedido_guardado;
-
-            }else{
-                return Yii::$app->response->send('TESTSSSS');
-            }
-
+        return $pedido_guardado;
     }
 
     public function actionUpdate($id)
@@ -130,9 +126,11 @@ class PedidoController extends ActiveController
 
         $pedido=$this->findModel($id);
 
-        $mesa=Mesa::findOne($pedido->id_mesa);
-        $mesa->estado=2;
-        $mesa->save();
+        if($pedido->tipo==0){
+            $mesa=Mesa::findOne($pedido->id_mesa);
+            $mesa->estado=2;
+            $mesa->save();
+        }
 
         $pedido->delete();
 
