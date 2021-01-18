@@ -10,6 +10,7 @@ use yii\rest\ActiveController;
 use yii\web\Controller;
 use yii\web\Response;
 use app\models\Perfil;
+use yii\web\HttpException;
 /**
  * Default controller for the `v1` module
  */
@@ -115,6 +116,8 @@ class AuthController extends ActiveController
                 $user->delete();
 
             }
+        }else{
+            throw new HttpException("500", 'Credenciais Invalidas.');
         }
 
         return $user;
