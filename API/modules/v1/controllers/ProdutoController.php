@@ -33,22 +33,14 @@ class ProdutoController extends ActiveController
 
     public function actionIndex()
     {
-        $modelClass = $this->modelClass;
-        $model = $modelClass::find()->where(['estado' => 0])->all();
-
-        if ($model === null)
-            throw new \yii\web\NotFoundHttpException("null");
+        $model = Produto::findAll(['estado' => 0]);
 
         return $model;
     }
 
     public function actionCategoria($id)
     {
-        $modelClass = $this->modelClass;
-        $model = Produto::findAll(['id_categoria' => $id]);
-
-        if ($model === null)
-            throw new \yii\web\NotFoundHttpException("null");
+        $model = Produto::findAll(['id_categoria' => $id,'estado' => 0]);
 
         return $model;
     }

@@ -71,13 +71,9 @@ class PedidoController extends ActiveController
 
         $pedido=Pedido::find()->where(['id_perfil'=>$perfil->id_user])->all();
 
-        if($pedido!=null){
 
-            return $pedido;
+        return $pedido;
 
-        }else{
-            throw new NotFoundHttpException('Não existe pedidos');
-        }
     }
 
     public function actionCriar()

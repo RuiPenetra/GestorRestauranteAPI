@@ -51,10 +51,8 @@ class PedidoprodutoController extends ActiveController
     {
         $pedidos=PedidoProduto::find()->all();
 
-        if ($pedidos != null)
-            return $pedidos;
-        else
-            throw new NotFoundHttpException('Não existe pedidos');
+        return $pedidos;
+
     }
 
     /**
