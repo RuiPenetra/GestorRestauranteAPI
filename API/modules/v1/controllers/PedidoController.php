@@ -10,6 +10,8 @@ use Yii;
 use app\models\Pedido;
 use app\models\PedidoSearch;
 use yii\base\ErrorException;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBasicAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
@@ -36,7 +38,20 @@ class PedidoController extends ActiveController
             ]
         ];
         $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
+            'class' => CompositeAuth::className(),
+            'authMethods' => [
+                [
+                    'class' => HttpBasicAuth::className(),
+                    'auth' => function ($username, $password) {
+                        $user = User::findByUsername($username);
+                        if ($user && $user->validatePassword($password)) {
+                            return $user;
+                        }
+                        return null;
+                    },
+                ],
+                QueryParamAuth::className(),
+            ]
         ];
         return $behaviors;
     }
@@ -51,19 +66,23 @@ class PedidoController extends ActiveController
 
     public function actionIndex()
     {
-        Yii::$app->response->format=Response::FORMAT_JSON;
-
         $iduser = Yii::$app->user->identity->id;
 
-        $pedidos=Pedido::findAll(['id_perfil'=>$iduser]);
+        $pedido = new $this->modelClass;
 
-      
-        return $pedidos;
+        $pedidos=$pedido::findAll(['id_perfil'=>$iduser]);
+
+
+        if($pedidos!=null){
+            return $pedidos;
+        }else{
+            throw new NotFoundHttpException('Não existe pedidos associados a este utilizador');
+        }
 
     }
 
 
-    public function actionView($id_user)
+    public function actionVerPed($id_user)
     {
 
         $perfil=Perfil::findOne($id_user);
@@ -76,31 +95,62 @@ class PedidoController extends ActiveController
 
     }
 
-    public function actionCriar()
+    public function actionPedrestaurante()
     {
 
-        Yii::$app->response->format=Response::FORMAT_JSON;
-        $pedido = new Pedido();
+        $pedido = new $this->modelClass;
 
-        $pedido->attributes=Yii::$app->request->post();
+        $id_perfil= Yii::$app->user->identity->id;
+        $id_mesa= Yii::$app->request->post("id_mesa");
+        $data= Yii::$app->request->post("data");
 
-        if($pedido->tipo!=0){
-            $pedido->scenario="scenariotakeaway";
+        $pedido->id_perfil= $id_perfil;
+        $pedido->tipo= 0;
+        $pedido->data= $data;
+        $pedido->estado= 1;
+        $pedido->id_mesa= $id_mesa;
+        $pedido->scenario="scenariorestaurante";
 
-        }else{
-            $pedido->scenario="scenariorestaurante";
+        $mesa=Mesa::findOne($id_mesa);
+
+        if($mesa->estado!=2){
+            return ['SaveError'=>false];
         }
+        $res=$pedido->save();
 
-        if($pedido->tipo==0){
+        if($res==true){
             $mesa=Mesa::findOne($pedido->id_mesa);
-            $mesa->estado=2;
+            $mesa->estado=1;
             $mesa->save();
+            return ['SaveError'=>$res];
         }
-        
-        $pedido->save();
-        $pedido_guardado=Pedido::findOne($pedido->id);
 
-        return $pedido_guardado;
+        return ['SaveError'=>false];
+    }
+
+    public function actionPedtakeaway()
+    {
+
+        $pedido = new $this->modelClass;
+
+        $id_perfil= Yii::$app->user->identity->id;
+        $nome_pedido= Yii::$app->request->post("nome_pedido");
+        $data= Yii::$app->request->post("data");
+
+
+        $pedido->id_perfil= $id_perfil;
+        $pedido->tipo= 1;
+        $pedido->data= $data;
+        $pedido->estado= 0;
+        $pedido->scenario="scenariotakeaway";
+        $pedido->nome_pedido= $nome_pedido;
+        $res=$pedido->save();
+
+        if($res==true){
+            return ['SaveError'=>$res];
+        }
+
+        return ['SaveError'=>$res];
     }
 
     public function actionUpdate($id)
@@ -121,7 +171,9 @@ class PedidoController extends ActiveController
     {
         PedidoProduto::deleteAll(['id_pedido'=>$id]);
 
-        $pedido=$this->findModel($id);
+        $pedido = new $this->modelClass;
+
+        $pedido = $pedido::findOne($id);
 
         if($pedido->tipo==0){
             $mesa=Mesa::findOne($pedido->id_mesa);
@@ -129,24 +181,16 @@ class PedidoController extends ActiveController
             $mesa->save();
         }
 
-        $pedido->delete();
+        $rest=$pedido->delete();
 
-        return true;
-    }
-
-    /**
-     * Finds the Pedido model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Pedido the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Pedido::findOne($id)) !== null) {
-            return $model;
+        if($rest==true) {
+            Yii::$app->response->statusCode =200;
+            return ['code'=>'ok'];
+        }else{
+            Yii::$app->response->statusCode =404;
+            return ['code'=>'error'];
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }

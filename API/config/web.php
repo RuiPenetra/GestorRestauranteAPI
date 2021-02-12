@@ -56,44 +56,62 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [ 
-                [
-                'class' => 'yii\rest\UrlRule',
-                'controller' => 'v1/auth',
-                'pluralize' => false,
-                'extraPatterns' => [
-                    'POST login' => 'login', 
-                    'POST registar' => 'registar', 
+                    [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['v1/noauth'],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'POST registaruser' => 'registaruser',
+                        'GET produto' => 'todosprodutos',
+                        'GET produtocategoria/{id}' => 'produtocategoria',
+                    ],
                 ],
-            ],
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => ['v1/pedido'],
                     'pluralize' => false,
-                    'except' => ['delete'],
+                    'except' => ['create','update','delete'],
                     'extraPatterns' => [
-                        'GET pedido' => 'index', // 'update' é 'actionupdate'
-                        'POST pedido' => 'criar', // 'update' é 'actionCriar'
-                        'DELETE {id}/apagar' => 'apagar', // 'update' é 'actionCriar'
+                        'GET pedido' => 'index',                    // 'update' é 'actionupdate'
+                        'POST restaurante' => 'pedrestaurante',     // 'actionCriar' [ criar pedido produto ]
+                        'POST takeaway' => 'pedtakeaway',
+                        'DELETE {id}' => 'apagar',                  // 'update' é 'actionCriar'
                     ],
                 ],
+                //PEDIDO PRODUTO
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => ['v1/produto'],
                     'pluralize' => false,
+                    'except' => ['create','update','delete'],
+                    'extraPatterns' => [
+                        'GET categoria/{id}' => 'categoria', // 'actionCategoria' [ mostrar todos os produtos determinada categoria ]
+                        'POST teste' => 'teste', // 'actionTeste' [ mostrar todos os produtos determinada categoria ]
+                    ],
+                ],
+
+                //CATEGORIA
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['v1/categoriaProduto'],
+                    'pluralize' => false,
+                    'except' => ['index','create','update','delete'],
                     'extraPatterns' => [
                         'GET categoria/{id}' => 'categoria', // 'update' é 'actionupdate'
                     ],
                 ],
+                //PEDIDO PRODUTO
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => 'v1/pedidoproduto',
                     'pluralize' => false,
-                    'except' => ['delete'],
+                    'except' => ['create','update','delete'],
                     'extraPatterns' => [
-                        'GET all/{id}' => 'all', // 'update' é 'actionupdate'
-                        'POST criar' => 'criar', // 'update' é 'actionupdate'
-                        'PUT {id}/atualizar' => 'atualizar', // 'update' é 'actionupdate'
-                        'DELETE {id}/apagar' => 'apagar', // 'update' é 'actionCriar'
+                        'GET {id}' => 'index',      // 'actionIndex'  [ mostrar todos os pedidos produto de um pedido ]
+                        'POST restaurante' => 'addrestaurante',          // 'actionCriar' [ criar pedido produto ]
+                        'POST takeaway' => 'addtakeaway',          // 'actioncriarTakeaway' [ adicionar pedido produto ao pedido takeaway ]
+                        'PUT {id}' => 'atualizar',   // 'actionAtualizar' [ atualizar pedido produto ]
+                        'DELETE {id}' => 'remover',  // 'actionApagar' [ apagar pedido produto ]
                     ],
                 ],
                 [
@@ -101,8 +119,9 @@ $config = [
                     'controller' => 'v1/perfil',
                     'pluralize' => false,
                     'extraPatterns' => [
-                        'GET {id}/perfil' => 'user', // 'morada' é 'actionMorada'
-                        'PUT {id}/atualizar' => 'atualizar', // 'update' é 'actionupdate'
+                        'GET ' => 'index', // 'morada' é 'actionMorada'
+                        'GET todos' => 'todos', // 'morada' é 'actionMorada'
+                        'PUT {id}' => 'atualizar', // 'update' é 'actionupdate'
                         'POST criar'=>'criar',
                     ],
                 ],

@@ -8,6 +8,7 @@ use app\models\Perfil;
 use app\models\PerfilSearch;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBasicAuth;
+use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Controller;
@@ -37,13 +38,7 @@ class PerfilController extends ActiveController
             'authMethods' => [
                 [
                     'class' => HttpBasicAuth::className(),
-                    'auth' => function ($username, $password) {
-                        $user = User::find()->where(['username' => $username])->one();
-                        if ($user->verifyPassword($password)) {
-                            return $user;
-                        }
-                        return null;
-                    },
+                    'auth' => [$this,'auth'],
                 ],
                 QueryParamAuth::className(),
             ]
@@ -59,74 +54,81 @@ class PerfilController extends ActiveController
         return $actions;
     }
 
+    public function auth($username,$password){
+        $user = User::findByUsername($username);
+        if ($user && $user->validatePassword($password)) {
+
+            return $user;
+        }
+        return null;
+    }
+
     public function actionIndex()
     {
         $iduser = Yii::$app->user->identity->id;
 
-        $perfil= Perfil::findOne($iduser);;
+        $perfil = $this->modelClass;
 
-        return ['id_user' => $perfil->id_user,
-            'nome' => $perfil->nome,
-            'apelido' => $perfil->apelido,
-            'morada' => $perfil->morada,
-            'datanascimento' => $perfil->datanascimento,
-            'nacionalidade' => $perfil->nacionalidade,
-            'codigopostal' => $perfil->codigopostal,
-            'telemovel' => $perfil->telemovel,
-            'genero' => $perfil->genero,
-            'cargo' => $perfil->cargo,
-            'username' => $perfil->user->username,
-            'email' => $perfil->user->email];
+        $rest=$perfil::findOne($iduser);
+
+        return $rest;
+
     }
-
-    public function actionCriar()
-    {
-        Yii::$app->response->format=Response::FORMAT_JSON;
-        
-        $user = new User();
-        $user->attributes=Yii::$app->request->post();
-        $user->save();
-       
-        $request = Yii::$app->request;
-        // $perfil= new Perfil();
-        // $perfil->attributes=Yii::$app->request->post();
-        
-        // $perfil->save();
-        
-        return $user;
-    }
-
 
     public function actionAtualizar($id)
     {
-        Yii::$app->response->format=Response::FORMAT_JSON;
+        //USER
+        $username=Yii::$app->request->post("username");
+        $email=Yii::$app->request->post("email");
+
+        //Futuramente
+        //$password=Yii::$app->request->post("password");
+
+        //PERFIL
+        $nome=Yii::$app->request->post("nome");
+        $apelido=Yii::$app->request->post("apelido");
+        $morada=Yii::$app->request->post("morada");
+        $datanascimento=Yii::$app->request->post("datanascimento");
+        $nacionalidade=Yii::$app->request->post("nacionalidade");
+        $codigopostal=Yii::$app->request->post("codigopostal");
+        $telemovel=Yii::$app->request->post("telemovel");
+        $genero=Yii::$app->request->post("genero");
 
         $user = User::findOne($id);
 
-        $user->username=Yii::$app->request->post('username');
-        $user->email=Yii::$app->request->post('email');
+        $user->username = $username;
+        $user->email = $email;
 
-        $user->save();
+        $model = new $this->modelClass;
 
-        $perfil = Perfil::findOne($user->id);
-
-        $perfil->attributes=Yii::$app->request->post();
-
+        $perfil=$model::findOne($id);
+        $perfil->nome=$nome;
+        $perfil->apelido=$apelido;
+        $perfil->morada=$morada;
+        $perfil->datanascimento=$datanascimento;
+        $perfil->nacionalidade=$nacionalidade;
+        $perfil->codigopostal=$codigopostal;
+        $perfil->telemovel=$telemovel;
+        $perfil->genero=$genero;
         $perfil->save();
 
+        if($perfil->save() && $user->save()){
 
-        return ['id_user' => $perfil->id_user,
-                    'nome' => $perfil->nome,
-                    'apelido' => $perfil->apelido,
-                    'morada' => $perfil->morada,
-                    'datanascimento' => $perfil->datanascimento,
-                    'nacionalidade' => $perfil->nacionalidade,
-                    'codigopostal' => $perfil->codigopostal,
-                    'telemovel' => $perfil->telemovel,
-                    'genero' => $perfil->genero,
-                    'cargo' => $perfil->cargo,
-                    'username' => $user->username,
-                    'email' => $user->email];
+            return ['SaveError' => true];
+        }else{
+            return ['SaveError' => false];
+        }
+
+    }
+
+    public function actionTodos()
+    {
+
+        $modelClass = $this->modelClass;
+
+        $perfis=$modelClass::find()->all();
+
+        return $perfis;
     }
 }
 

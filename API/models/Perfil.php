@@ -43,7 +43,11 @@ class Perfil extends \yii\db\ActiveRecord
             [['id_user', 'nome', 'apelido', 'morada', 'datanascimento', 'codigopostal', 'nacionalidade', 'telemovel', 'genero', 'cargo'], 'required'],
             [['id_user', 'genero'], 'integer'],
             [['datanascimento'], 'safe'],
-            [['nome', 'apelido', 'morada', 'codigopostal', 'nacionalidade', 'telemovel', 'cargo'], 'string', 'max' => 255],
+            [['nome', 'apelido'], 'string', 'max' => 25],
+            [['morada'], 'string', 'max' => 150],
+            [['codigopostal'], 'string', 'max' => 8],
+            [['nacionalidade', 'cargo'], 'string', 'max' => 50],
+            [['telemovel'], 'string', 'max' => 13],
             [['telemovel'], 'unique'],
             [['id_user'], 'unique'],
             [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['id_user' => 'id']],
@@ -118,86 +122,4 @@ class Perfil extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Reserva::className(), ['id_funcionario' => 'id_user']);
     }
-
-    /**
-     * @param int $id_user
-     */
-    public function setIdUser($id_user)
-    {
-        $this->id_user = $id_user;
-    }
-
-    /**
-     * @param string $nome
-     */
-    public function setNome($nome)
-    {
-        $this->nome = $nome;
-    }
-
-    /**
-     * @param string $apelido
-     */
-    public function setApelido($apelido)
-    {
-        $this->apelido = $apelido;
-    }
-
-    /**
-     * @param string $morada
-     */
-    public function setMorada($morada)
-    {
-        $this->morada = $morada;
-    }
-
-    /**
-     * @param string $datanascimento
-     */
-    public function setDatanascimento($datanascimento)
-    {
-        $this->datanascimento = $datanascimento;
-    }
-
-    /**
-     * @param string $codigopostal
-     */
-    public function setCodigopostal($codigopostal)
-    {
-        $this->codigopostal = $codigopostal;
-    }
-
-    /**
-     * @param string $nacionalidade
-     */
-    public function setNacionalidade($nacionalidade)
-    {
-        $this->nacionalidade = $nacionalidade;
-    }
-
-    /**
-     * @param string $telemovel
-     */
-    public function setTelemovel($telemovel)
-    {
-        $this->telemovel = $telemovel;
-    }
-
-    /**
-     * @param int $genero
-     */
-    public function setGenero($genero)
-    {
-        $this->genero = $genero;
-    }
-
-    /**
-     * @param string $cargo
-     */
-    public function setCargo($cargo)
-    {
-        $this->cargo = $cargo;
-    }
-
-
 }

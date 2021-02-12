@@ -2,9 +2,13 @@
 
 namespace app\modules\v1\controllers;
 
+use app\models\Pedido;
+use app\models\User;
 use Yii;
 use app\models\PedidoProduto;
 use app\models\PedidoprodutoSearch;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBasicAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Controller;
@@ -29,7 +33,20 @@ class PedidoprodutoController extends ActiveController
             ]
         ];
         $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
+            'class' => CompositeAuth::className(),
+            'authMethods' => [
+                [
+                    'class' => HttpBasicAuth::className(),
+                    'auth' => function ($username, $password) {
+                        $user = User::findByUsername($username);
+                        if ($user && $user->validatePassword($password)) {
+                            return $user;
+                        }
+                        return null;
+                    },
+                ],
+                QueryParamAuth::className(),
+            ]
         ];
         return $behaviors;
     }
@@ -47,86 +64,129 @@ class PedidoprodutoController extends ActiveController
      * Lists all PedidoProduto models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($id)
     {
-        $pedidos=PedidoProduto::find()->all();
+        $pedidoProduto = new $this->modelClass;
 
-        return $pedidos;
+        $rest=$pedidoProduto::findAll(['id_pedido'=>$id]);
 
-    }
-
-    /**
-     * Displays a single PedidoProduto model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionAll($id)
-    {
-
-        $pedidosProduto=PedidoProduto::findAll(['id_pedido'=>$id]);
-
-        return $pedidosProduto;
-    }
-
-    /**
-     * Creates a new PedidoProduto model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCriar()
-    {
-        Yii::$app->response->format=Response::FORMAT_JSON;
-
-        $pedidoProduto = new PedidoProduto();
-
-        $pedidoProduto->attributes=Yii::$app->request->post();
-
-        $pedidoProduto->quant_Entregue=0;
-        $pedidoProduto->quant_Preparacao=0;
-
-        if($pedidoProduto->save()){
-
-            return $pedidoProduto;
+        if($rest!=null){
+            return $rest;
         }else{
-            return Yii::$app->response->send('ERROOOO');
+            throw new NotFoundHttpException("Pedido Produto não encontrado!");
         }
+
     }
 
     /**
-     * Updates an existing PedidoProduto model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * Devolve a resposta TRUE or FALSE
      */
+    public function actionAddrestaurante()
+    {
+        $id_pedido=Yii::$app->request->post('id_pedido');
+        $id_produto=Yii::$app->request->post('id_produto');
+        $quant_Pedida=Yii::$app->request->post('quant_Pedida');
+        $preco=Yii::$app->request->post('preco');
+
+
+        $pedidoProduto = new $this->modelClass;
+
+
+        $pedProduto=$pedidoProduto::findOne(['id_pedido'=>$id_pedido,'id_produto'=>$id_produto]);
+
+        if($pedProduto!=null){
+            $pedProduto->quant_Pedida=$pedProduto->quant_Pedida + $quant_Pedida;
+            $pedProduto->preco=$pedProduto->preco + $preco;
+            $rest=$pedProduto->save();
+
+        }else{
+            $pedidoProduto->id_pedido=$id_pedido;
+            $pedidoProduto->id_produto=$id_produto;
+            $pedidoProduto->quant_Pedida=$quant_Pedida;
+            $pedidoProduto->preco=$preco;
+            $pedidoProduto->quant_Entregue=0;
+            $pedidoProduto->quant_Preparacao=0;
+            $pedidoProduto->estado=0;
+
+            $rest= $pedidoProduto->save();
+        }
+
+        return ['SaveError'=>$rest];
+
+
+    }
+
+
+    public function actionAddtakeaway()
+    {
+        $iduser = Yii::$app->user->identity->id;
+
+        $Items=Yii::$app->request->post('items');
+        $id_produto=Yii::$app->request->post('id_produto');
+        $quant=Yii::$app->request->post('quant');
+        $preco=Yii::$app->request->post('preco');
+
+
+        //$array = json_decode($response, true);
+
+        $pedido=Pedido::findOne(['id_perfil'=>$iduser, 'estado'=>0]);
+
+        $pedidoProduto = new $this->modelClass;
+
+        $pedidoProduto->id_pedido= $pedido->id;
+        $pedidoProduto->id_produto= $id_produto;
+        $pedidoProduto->quant_Pedida= $quant;
+        $pedidoProduto->preco= $preco;
+        $pedidoProduto->quant_Entregue= 0;
+        $pedidoProduto->quant_Preparacao= 0;
+        $pedidoProduto->estado=0;
+
+        $res= $pedidoProduto->save();
+
+        $itemsPedido= sizeof($pedidoProduto::findAll(['id_pedido'=>$pedido->id]));
+
+        if($Items==$itemsPedido){
+            $pedido->estado=1;
+            $pedido->save();
+        }
+
+        return ['SaveError'=>$res];
+    }
+
     public function actionAtualizar($id)
     {
-        Yii::$app->response->format=Response::FORMAT_JSON;
+        $quant_Pedida=Yii::$app->request->post('quant_Pedida');
+        $preco=Yii::$app->request->post('preco');
 
-        $pedidoProduto = PedidoProduto::findOne($id);
+        $pedidoProduto = new $this->modelClass;
 
-        $pedidoProduto->attributes=Yii::$app->request->post();
+        $rest=$pedidoProduto::findOne($id);
 
-        $pedidoProduto->save();
+        if(count($rest)>0){
+            $rest->quant_Pedida=$quant_Pedida;
+            $rest->preco=$preco;
+            $response=$rest->save();
 
-        return $pedidoProduto;
-    }
-
-    public function actionApagar($id)
-    {
-        $this->findModel($id)->delete();
-
-        return true;
-
-    }
-
-    protected function findModel($id)
-    {
-        if (($model = PedidoProduto::findOne($id)) !== null) {
-            return $model;
+            return ['SaveError'=>$response];
+        }else{
+            throw new NotFoundHttpException("Pedido Produto não encontrado!");
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionRemover($id)
+    {
+        $pedidoProduto = new $this->modelClass;
+
+        $rest=$pedidoProduto::findOne($id);
+        $response=$rest->delete();
+
+        if($response) {
+            Yii::$app->response->statusCode =200;
+            return ['code'=>'ok'];
+        }else{
+            Yii::$app->response->statusCode =404;
+            return ['code'=>'error'];
+        }
     }
 }

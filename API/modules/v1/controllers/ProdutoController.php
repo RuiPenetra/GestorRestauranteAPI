@@ -2,8 +2,12 @@
 
 namespace app\modules\v1\controllers;
 
+use app\models\PedidoProduto;
 use app\models\Produto;
+use Yii;
 use yii\filters\auth\QueryParamAuth;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\rest\ActiveController;
 use yii\web\Response;
 
@@ -44,4 +48,21 @@ class ProdutoController extends ActiveController
 
         return $model;
     }
+
+
+    public function actionTeste()
+    {
+        $response=Yii::$app->request->post();
+
+        //$data = json_decode($response,true);
+
+        $data = '{itemd={"dados":[null,null,null]}}';
+
+        $array = json_decode($data, true);
+
+
+        return $array;
+
+    }
+
 }
