@@ -76,6 +76,11 @@ class NoauthController extends ActiveController
             $perfil->genero=$genero;
             $perfil->cargo="cliente";
 
+            $auth = Yii::$app->authManager;
+
+            $cliente = $auth->getRole('cliente');
+            $auth->assign($cliente, $user->id);
+
             $rest=$perfil->save();
 
             if($rest!=true){
