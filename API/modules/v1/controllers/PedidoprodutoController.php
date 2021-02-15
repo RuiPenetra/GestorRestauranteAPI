@@ -104,7 +104,7 @@ class PedidoprodutoController extends ActiveController
             $pedidoProduto->preco=$preco;
             $pedidoProduto->quant_Entregue=0;
             $pedidoProduto->quant_Preparacao=0;
-            $pedidoProduto->estado=0;
+            $pedidoProduto->estado=1;
 
             $rest= $pedidoProduto->save();
         }
@@ -163,7 +163,11 @@ class PedidoprodutoController extends ActiveController
         if(count($rest)>0){
             $rest->quant_Pedida=$quant_Pedida;
             $rest->preco=$preco;
-            $rest->estado=1;
+
+            if($rest->estado!=0){
+                $rest->estado=1;
+            }
+
             $response=$rest->save();
 
             return ['SaveError'=>$response];
