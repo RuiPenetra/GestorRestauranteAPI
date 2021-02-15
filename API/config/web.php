@@ -75,10 +75,10 @@ $config = [
                     'pluralize' => false,
                     'except' => ['create','update','delete'],
                     'extraPatterns' => [
-                        'GET pedido' => 'index',                    // 'update' é 'actionupdate'
-                        'POST restaurante' => 'pedrestaurante',     // 'actionCriar' [ criar pedido produto ]
+                        'GET pedido' => 'index',
+                        'POST restaurante' => 'pedrestaurante',
                         'POST takeaway' => 'pedtakeaway',
-                        'DELETE {id}' => 'apagar',                  // 'update' é 'actionCriar'
+                        'DELETE {id}' => 'apagar',
                     ],
                 ],
                 //PEDIDO PRODUTO
@@ -88,8 +88,7 @@ $config = [
                     'pluralize' => false,
                     'except' => ['create','update','delete'],
                     'extraPatterns' => [
-                        'GET categoria/{id}' => 'categoria', // 'actionCategoria' [ mostrar todos os produtos determinada categoria ]
-                        'POST teste' => 'teste', // 'actionTeste' [ mostrar todos os produtos determinada categoria ]
+                        'GET categoria/{id}' => 'categoria',
                     ],
                 ],
 
@@ -100,7 +99,7 @@ $config = [
                     'pluralize' => false,
                     'except' => ['index','create','update','delete'],
                     'extraPatterns' => [
-                        'GET categoria/{id}' => 'categoria', // 'update' é 'actionupdate'
+                        'GET categoria/{id}' => 'categoria',
                     ],
                 ],
                 //PEDIDO PRODUTO
@@ -110,11 +109,11 @@ $config = [
                     'pluralize' => false,
                     'except' => ['create','update','delete'],
                     'extraPatterns' => [
-                        'GET {id}' => 'index',      // 'actionIndex'  [ mostrar todos os pedidos produto de um pedido ]
-                        'POST restaurante' => 'addrestaurante',          // 'actionCriar' [ criar pedido produto ]
-                        'POST takeaway' => 'addtakeaway',          // 'actioncriarTakeaway' [ adicionar pedido produto ao pedido takeaway ]
-                        'PUT {id}' => 'atualizar',   // 'actionAtualizar' [ atualizar pedido produto ]
-                        'DELETE {id}' => 'remover',  // 'actionApagar' [ apagar pedido produto ]
+                        'GET {id}' => 'index',
+                        'POST restaurante' => 'addrestaurante',
+                        'POST takeaway' => 'addtakeaway',
+                        'PUT {id}' => 'atualizar',
+                        'DELETE {id}' => 'remover',
                     ],
                 ],
                 [
@@ -122,9 +121,9 @@ $config = [
                     'controller' => 'v1/perfil',
                     'pluralize' => false,
                     'extraPatterns' => [
-                        'GET ' => 'index', // 'morada' é 'actionMorada'
-                        'GET todos' => 'todos', // 'morada' é 'actionMorada'
-                        'PUT {id}' => 'atualizar', // 'update' é 'actionupdate'
+                        'GET ' => 'index',
+                        'GET todos' => 'todos',
+                        'PUT {id}' => 'atualizar',
                         'POST criar'=>'criar',
                     ],
                 ],
