@@ -70,11 +70,9 @@ class PedidoprodutoController extends ActiveController
 
         $rest=$pedidoProduto::findAll(['id_pedido'=>$id]);
 
-        if($rest!=null){
+
             return $rest;
-        }else{
-            throw new NotFoundHttpException("Pedido Produto não encontrado!");
-        }
+
 
     }
 

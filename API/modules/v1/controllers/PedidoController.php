@@ -73,11 +73,9 @@ class PedidoController extends ActiveController
         $pedidos=$pedido::findAll(['id_perfil'=>$iduser]);
 
 
-        if($pedidos!=null){
+
             return $pedidos;
-        }else{
-            throw new NotFoundHttpException('Não existe pedidos associados a este utilizador');
-        }
+
 
     }
 
