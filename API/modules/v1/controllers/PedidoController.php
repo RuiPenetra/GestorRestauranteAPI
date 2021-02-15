@@ -73,10 +73,7 @@ class PedidoController extends ActiveController
         $pedidos=$pedido::findAll(['id_perfil'=>$iduser]);
 
 
-
-            return $pedidos;
-
-
+        return $pedidos;
     }
 
 
@@ -150,20 +147,6 @@ class PedidoController extends ActiveController
 
         return ['SaveError'=>$res];
     }
-
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
 
     public function actionApagar($id)
     {

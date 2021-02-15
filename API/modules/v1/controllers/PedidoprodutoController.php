@@ -163,6 +163,7 @@ class PedidoprodutoController extends ActiveController
         if(count($rest)>0){
             $rest->quant_Pedida=$quant_Pedida;
             $rest->preco=$preco;
+            $rest->estado=1;
             $response=$rest->save();
 
             return ['SaveError'=>$response];
