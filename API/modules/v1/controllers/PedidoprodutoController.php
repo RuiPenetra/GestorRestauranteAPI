@@ -104,7 +104,7 @@ class PedidoprodutoController extends ActiveController
             $pedidoProduto->preco=$preco;
             $pedidoProduto->quant_Entregue=0;
             $pedidoProduto->quant_Preparacao=0;
-            $pedidoProduto->estado=1;
+            $pedidoProduto->estado=0;
 
             $rest= $pedidoProduto->save();
         }

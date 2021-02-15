@@ -50,19 +50,4 @@ class ProdutoController extends ActiveController
     }
 
 
-    public function actionTeste()
-    {
-        $response=Yii::$app->request->post();
-
-        //$data = json_decode($response,true);
-
-        $data = '{itemd={"dados":[null,null,null]}}';
-
-        $array = json_decode($data, true);
-
-
-        return $array;
-
-    }
-
 }
